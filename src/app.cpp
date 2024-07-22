@@ -23,7 +23,11 @@ void VulkanApp::initWindow()
   window = glfwCreateWindow(static_cast<int>(WIDTH), static_cast<int>(HEIGHT),
                             "Vulkan App", nullptr, nullptr);
 }
-void VulkanApp::initVulkan() { createInstance(); }
+void VulkanApp::initVulkan()
+{
+  createInstance();
+  pickPhysicalDevice();
+}
 
 void VulkanApp::mainLoop()
 {
@@ -131,5 +135,30 @@ bool VulkanApp::checkValidationLayerSupport()
     }
   }
 
+  return true;
+}
+
+void VulkanApp::pickPhysicalDevice()
+{
+  uint32_t deviceCount = 0;
+  vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+  if (deviceCount == 0) {
+    throw std::runtime_error("Failed to find GPUs with Vulkan support!");
+  }
+  std::vector<VkPhysicalDevice> devices(deviceCount);
+  vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+  for (const auto &device : devices) {
+    if (isDeviceSuitable(device)) {
+      physicalDevice = device;
+      break;
+    }
+  }
+  if (physicalDevice == VK_NULL_HANDLE) {
+    throw std::runtime_error("Failed to find a suitable GPU!");
+  }
+}
+
+bool VulkanApp::isDeviceSuitable(VkPhysicalDevice)
+{
   return true;
 }

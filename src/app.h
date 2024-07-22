@@ -13,12 +13,15 @@ private:
   void initWindow();
   void createInstance();
   bool checkValidationLayerSupport();
+  void pickPhysicalDevice();
+  bool isDeviceSuitable(VkPhysicalDevice device);
 
 private:
   GLFWwindow *window;
   const uint32_t WIDTH = 800;
   const uint32_t HEIGHT = 600;
   VkInstance instance;
+  VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
   const std::array<const char *, 1> validationLayers = {
       "VK_LAYER_KHRONOS_validation"};
 
