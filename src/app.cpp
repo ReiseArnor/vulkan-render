@@ -41,6 +41,10 @@ void VulkanApp::cleanup()
 
 void VulkanApp::createInstance()
 {
+  if (enableValidationLayers && !checkValidationLayerSupport()) {
+    throw std::runtime_error("Validation layers requested, but not available!");
+  }
+
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = "Vulkan App";
@@ -60,6 +64,15 @@ void VulkanApp::createInstance()
   createInfo.enabledExtensionCount = glfwExtensionCount;
   createInfo.ppEnabledExtensionNames = glfwExtensions;
   createInfo.enabledLayerCount = 0;
+
+  if (enableValidationLayers) {
+    createInfo.enabledLayerCount = static_cast<uint32_t>(
+        validationLayers.size()); // Number of validation layers
+    createInfo.ppEnabledLayerNames = validationLayers.data();
+  }
+  else {
+    createInfo.enabledLayerCount = 0;
+  }
 
   uint32_t extensionCount = 0;
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -93,4 +106,30 @@ void VulkanApp::createInstance()
   if (result != VK_SUCCESS) {
     throw std::runtime_error("Failed to create instance!");
   }
+}
+
+bool VulkanApp::checkValidationLayerSupport()
+{
+  uint32_t layerCount;
+  vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+  std::vector<VkLayerProperties> availableLayers(layerCount);
+  vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+  for (const char *layerName : validationLayers) {
+    bool layerFound = false;
+
+    for (const auto &layerProperties : availableLayers) {
+      if (strcmp(layerName, layerProperties.layerName) == 0) {
+        layerFound = true;
+        break;
+      }
+    }
+
+    if (!layerFound) {
+      return false;
+    }
+  }
+
+  return true;
 }
