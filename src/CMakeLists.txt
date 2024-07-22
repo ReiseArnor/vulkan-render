@@ -1,4 +1,4 @@
-set(CPP_SOURCE main.cpp)
+set(CPP_SOURCE main.cpp app.cpp)
 
 if(MSVC)
     set(CPP_FLAGS /W4 /permissive-)
