@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
@@ -59,6 +60,17 @@ void VulkanApp::createInstance()
   createInfo.enabledExtensionCount = glfwExtensionCount;
   createInfo.ppEnabledExtensionNames = glfwExtensions;
   createInfo.enabledLayerCount = 0;
+
+  uint32_t extensionCount = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+  std::vector<VkExtensionProperties> extensions(extensionCount);
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
+                                         extensions.data());
+  std::cout << "Available extensions:" << std::endl;
+  for (const auto &extension : extensions) {
+    std::cout << "\t" << extension.extensionName << '\n';
+  }
 
 #ifdef __APPLE__
   std::vector<const char *> requiredExtensions;
