@@ -1,6 +1,12 @@
 #include "GLFW/glfw3.h"
 #include <array>
+#include <optional>
 #include <vulkan/vulkan_core.h>
+
+struct QueueFamilyIndices {
+  std::optional<uint32_t> graphicsFamily;
+  bool isComplete() { return graphicsFamily.has_value(); }
+};
 
 class VulkanApp {
 public:
@@ -15,6 +21,7 @@ private:
   bool checkValidationLayerSupport();
   void pickPhysicalDevice();
   bool isDeviceSuitable(VkPhysicalDevice device);
+  QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 private:
   GLFWwindow *window;
